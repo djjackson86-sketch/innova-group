@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Innova Group — Feedback</title>
+<style>
+:root{
+  --bl:#16A34A;--bl-light:#dcfce7;
+  --navy:#1C3A2B;--sky:#e0f0ff;
+  --green:#16a34a;--green-light:#dcfce7;
+  --gray:#6b7280;--gray-light:#f3f4f6;--gray-mid:#e5e7eb;
+  --dark:#111827;--radius:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0fdf4;color:var(--dark);min-height:100vh;}
+.header{background:var(--navy);padding:18px 16px 16px;text-align:center;}
+.header-title{color:#4ADE80;font-weight:900;font-size:20px;letter-spacing:1px;}
+.header-sub{color:#9ca3af;font-size:12px;margin-top:3px;}
+.wrap{max-width:480px;margin:0 auto;padding:18px 14px 48px;}
+.card{background:#fff;border-radius:var(--radius);box-shadow:0 2px 12px rgba(0,0,0,0.09);padding:16px;margin-bottom:14px;}
+.form-group{margin-bottom:12px;}
+label{display:block;font-size:11.5px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+input,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--gray-mid);border-radius:8px;font-size:14px;font-family:inherit;background:#fff;color:var(--dark);outline:none;transition:border .15s;}
+input:focus,textarea:focus{border-color:var(--bl);}
+.intro-text{font-size:14px;color:var(--gray);line-height:1.7;}
+.section-label{font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--gray-mid);}
+.rating-row{margin-bottom:16px;}
+.rating-row:last-child{margin-bottom:0;}
+.rating-name{font-size:14px;font-weight:700;color:var(--dark);margin-bottom:8px;}
+.star-row{display:flex;gap:6px;}
+.star-btn{flex:1;padding:10px 0;border-radius:8px;border:2px solid var(--gray-mid);background:#fff;font-size:15px;font-weight:800;cursor:pointer;text-align:center;transition:all .12s;color:var(--gray);}
+.star-btn:hover{border-color:#f59e0b;background:#fffbeb;}
+.star-btn.sel{border-color:#f59e0b;background:#fef3c7;color:#92400e;}
+.star-btn.sel-lt{border-color:#fcd34d;background:#fffbeb;color:#b45309;}
+.req{color:#dc2626;}
+.btn-submit{width:100%;padding:15px;background:var(--bl);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:800;cursor:pointer;margin-top:4px;letter-spacing:.3px;}
+.btn-submit:active{background:#145a96;}
+.btn-submit:disabled{opacity:.55;cursor:not-allowed;}
+.err{color:#dc2626;font-size:12.5px;margin-top:10px;text-align:center;padding:8px 12px;background:#fee2e2;border-radius:8px;}
+/* Thank-you screen */
+.ty-wrap{text-align:center;padding:48px 24px;}
+.ty-emoji{font-size:64px;margin-bottom:16px;}
+.ty-title{font-size:26px;font-weight:900;color:var(--navy);margin-bottom:10px;}
+.ty-body{font-size:14px;color:var(--gray);line-height:1.7;max-width:300px;margin:0 auto;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">💦 Innova Group</div>
+  <div class="header-sub">Customer Feedback</div>
+</div>
+
+<div class="wrap">
+
+  <!-- ── Survey form ── -->
+  <div id="survey-form">
+
+    <div class="card">
+      <p class="intro-text" id="sv-intro"></p>
+    </div>
+
+    <!-- Contact details -->
+    <div class="card">
+      <div class="form-group">
+        <label>Your Name <span class="req">*</span></label>
+        <input id="sv-name" type="text" placeholder="Your full name" autocomplete="name">
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label>Phone Number <span class="req">*</span></label>
+        <input id="sv-phone" type="tel" placeholder="e.g. 082 123 4567" autocomplete="tel">
+      </div>
+    </div>
+
+    <!-- Ratings -->
+    <div class="card">
+      <div class="section-label">Rate your experience &nbsp;·&nbsp; 1 = Poor &nbsp;·&nbsp; 5 = Excellent</div>
+
+      <div class="rating-row">
+        <div class="rating-name">⭐ Overall Experience</div>
+        <div class="star-row" id="r-overall"></div>
+      </div>
+
+      <div class="rating-row">
+        <div class="rating-name">🎪 Quality of the Inflatable</div>
+        <div class="star-row" id="r-inflatable"></div>
+      </div>
+
+      <div class="rating-row">
+        <div class="rating-name">🚚 Delivery &amp; Setup</div>
+        <div class="star-row" id="r-delivery"></div>
+      </div>
+
+      <div class="rating-row">
+        <div class="rating-name">💰 Value for Money</div>
+        <div class="star-row" id="r-value"></div>
+      </div>
+
+      <div class="rating-row">
+        <div class="rating-name">😊 Service</div>
+        <div class="star-row" id="r-service"></div>
+      </div>
+
+      <div class="rating-row" style="margin-bottom:0;">
+        <div class="rating-name">👍 Would You Recommend Us?</div>
+        <div class="star-row" id="r-recommend"></div>
+      </div>
+    </div>
+
+    <!-- Comments -->
+    <div class="card">
+      <div class="form-group" style="margin-bottom:0;">
+        <label>💬 Comments &amp; Suggestions</label>
+        <textarea id="sv-comments" rows="4" placeholder="Anything else you'd like to share? We'd love to hear it!"></textarea>
+      </div>
+    </div>
+
+    <button class="btn-submit" id="sv-btn" onclick="submitSurvey()">Submit Feedback →</button>
+    <div id="sv-err" class="err" style="display:none;"></div>
+
+  </div><!-- /survey-form -->
+
+  <!-- ── Thank-you screen ── -->
+  <div id="thank-you" style="display:none;">
+    <div class="ty-wrap">
+      <div class="ty-emoji">🎉</div>
+      <div class="ty-title">Thank You!</div>
+      <p class="ty-body">We really appreciate your feedback — it helps us make every hire even better.<br><br>— Innova Group Team 💦</p>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+// ── Turso connection ──────────────────────────────────────────────────────────
+const TURSO_URL   = "https://innova-djjackson86-sketch.aws-eu-west-1.turso.io";
+const TURSO_TOKEN = "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJleHAiOjE4MDg5MzExMTIsImdpZCI6ImZmNzliYWYzLWEwYzYtNDVjYy1iNjdkLTU1MjllNGQ0YTA2YiIsImlhdCI6MTc3NzM5NTExMiwicmlkIjoiYTRlZmFmNTAtYzQ0ZC00YzRjLWI3OTgtMjQ0ZjYyYWI5MmVjIn0.waVq2Pp9F1oBoR1xM0j6DSExClezVMmBZRjQ9PW96tFASRWNgFKpYGUjk7VmhaK-ltPG0XsFTSyX1CRiqmd-Bw";
+
+async function tursoQuery(sql, args=[]) {
+  const typedArgs = args.map(v => {
+    if(v===null||v===undefined) return {type:'null'};
+    if(typeof v==='number') return Number.isInteger(v)?{type:'integer',value:String(v)}:{type:'float',value:String(v)};
+    return {type:'text',value:String(v)};
+  });
+  const res = await fetch(TURSO_URL+'/v2/pipeline', {
+    method:'POST',
+    headers:{'Authorization':'Bearer '+TURSO_TOKEN,'Content-Type':'application/json'},
+    body:JSON.stringify({requests:[{type:'execute',stmt:{sql,args:typedArgs}},{type:'close'}]})
+  });
+  if(!res.ok) throw new Error('Turso HTTP '+res.status);
+  const json = await res.json();
+  if(json.results[0].type==='error') throw new Error(json.results[0].error.message);
+  return json.results[0].response.result;
+}
+
+// ── Pre-fill from URL params ──────────────────────────────────────────────────
+const params      = new URLSearchParams(window.location.search);
+const prefillName = decodeURIComponent(params.get('name') ||'');
+const prefillPhone= decodeURIComponent(params.get('phone')||'');
+const bookingRef  = decodeURIComponent(params.get('ref')  ||'');
+const itemName    = decodeURIComponent(params.get('item') ||'');
+const operatorName= decodeURIComponent(params.get('operator') ||'');
+
+document.getElementById('sv-name').value  = prefillName;
+document.getElementById('sv-phone').value = prefillPhone;
+
+const firstName = prefillName ? prefillName.trim().split(' ')[0] : '';
+document.getElementById('sv-intro').textContent =
+  (firstName ? `Hi ${firstName}! ` : 'Hi! ') +
+  `We hope you had an amazing time` +
+  (itemName ? ` with the ${itemName}` : '') +
+  `. We'd love to hear your feedback — it only takes a minute. 🎉`;
+
+// ── Star rating builder ───────────────────────────────────────────────────────
+const RATING_KEYS = ['overall','inflatable','delivery','value','service','recommend'];
+const ratings     = {overall:0,inflatable:0,delivery:0,value:0,service:0,recommend:0};
+
+function buildStars(containerId, key) {
+  const el = document.getElementById(containerId);
+  for(let n=1; n<=5; n++){
+    const btn = document.createElement('button');
+    btn.type      = 'button';
+    btn.className = 'star-btn';
+    btn.textContent = n;
+    btn.addEventListener('click', () => {
+      ratings[key] = n;
+      el.querySelectorAll('.star-btn').forEach((b,i) => {
+        // sel = the selected button, sel-lt = buttons to the left of it
+        b.classList.toggle('sel',    i === n-1);
+        b.classList.toggle('sel-lt', i < n-1);
+        // Remove sel-lt from the selected button itself (toggle already handles
+        // the unselected-right buttons, but be explicit here to avoid any overlap)
+        if(i === n-1) b.classList.remove('sel-lt');
+      });
+    });
+    el.appendChild(btn);
+  }
+}
+RATING_KEYS.forEach(k => buildStars('r-'+k, k));
+
+// ── Ensure table exists ───────────────────────────────────────────────────────
+(async()=>{
+  try{
+    await tursoQuery(`CREATE TABLE IF NOT EXISTS ig_surveys (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT, phone TEXT, booking_ref TEXT, item TEXT, operator TEXT,
+      r_overall INTEGER, r_inflatable INTEGER, r_delivery INTEGER,
+      r_value INTEGER, r_service INTEGER, r_recommend INTEGER,
+      comments TEXT, submitted_at TEXT
+    )`);
+    // Add r_service column to existing tables (no-op if already present)
+    try{ await tursoQuery('ALTER TABLE ig_surveys ADD COLUMN r_service INTEGER'); }catch(e){}
+    try{ await tursoQuery('ALTER TABLE ig_surveys ADD COLUMN operator TEXT'); }catch(e){}
+  }catch(e){ console.warn('Survey table init:', e.message); }
+})();
+
+// ── Submit ────────────────────────────────────────────────────────────────────
+async function submitSurvey(){
+  const name     = document.getElementById('sv-name').value.trim();
+  const phone    = document.getElementById('sv-phone').value.trim();
+  const comments = document.getElementById('sv-comments').value.trim();
+  const errEl    = document.getElementById('sv-err');
+  errEl.style.display = 'none';
+
+  if(!name || !phone){
+    errEl.textContent = 'Please enter your name and phone number.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if(RATING_KEYS.some(k => ratings[k] === 0)){
+    errEl.textContent = 'Please rate all 6 aspects before submitting.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('sv-btn');
+  btn.disabled    = true;
+  btn.textContent = '⏳ Submitting…';
+
+  try{
+    await tursoQuery(
+      `INSERT INTO ig_surveys
+         (name,phone,booking_ref,item,operator,r_overall,r_inflatable,r_delivery,r_value,r_service,r_recommend,comments,submitted_at)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      [name, phone, bookingRef||null, itemName||null, operatorName||null,
+       ratings.overall, ratings.inflatable, ratings.delivery,
+       ratings.value,   ratings.service,    ratings.recommend,
+       comments||null,  new Date().toISOString()]
+    );
+    document.getElementById('survey-form').style.display = 'none';
+    document.getElementById('thank-you').style.display   = 'block';
+  }catch(e){
+    errEl.textContent = 'Submission failed — please try again. (' + e.message + ')';
+    errEl.style.display = 'block';
+    btn.disabled    = false;
+    btn.textContent = 'Submit Feedback →';
+  }
+}
+</script>
+</body>
+</html>

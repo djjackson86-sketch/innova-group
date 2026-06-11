@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Innova Group — Staff Booking</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pink:#F97316;--pink2:#EA580C;--pink-soft:#FFF7ED;
+  --purple:#22C55E;--purple2:#16A34A;--purple-soft:#F0FDF4;
+  --navy:#1C3A2B;--navy2:#14532D;
+  --green:#059669;--green-bg:#ECFDF5;--green-b:#A7F3D0;
+  --amber:#D97706;--amber-bg:#FFFBEB;--amber-b:#FDE68A;
+  --red:#DC2626;--red-bg:#FEF2F2;--red-b:#FECACA;
+  --bg:#F0FDF4;--surf:#fff;--surf2:#ECFDF5;
+  --border:#BBF7D0;--border2:#86EFAC;
+  --text:#1C3A2B;--text2:#166534;--text3:#4ADE80;
+  --r:10px;--rlg:14px;--rxl:18px;
+  --sh:0 1px 3px rgba(30,27,75,.08);--sh2:0 6px 20px rgba(30,27,75,.1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Nunito Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+.topbar{background:linear-gradient(135deg,var(--navy),var(--purple2));padding:14px 24px;display:flex;align-items:center;gap:11px}
+.topbar-logo{width:40px;height:40px;background:linear-gradient(135deg,var(--pink),var(--purple));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.topbar-title{font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;color:#fff;letter-spacing:-.3px}
+.topbar-sub{font-size:10.5px;color:rgba(255,255,255,.5)}
+.topbar-right{margin-left:auto}
+.staff-badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:700;color:#fff}
+.layout{max-width:680px;margin:0 auto;padding:24px 16px}
+.steps{display:flex;align-items:center;gap:2px;margin-bottom:24px}
+.step{display:flex;align-items:center;gap:6px;flex:1;font-size:11px;font-weight:700;color:var(--text3)}
+.step-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0;transition:all .2s}
+.step.active .step-num{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;box-shadow:0 3px 10px rgba(244,114,182,.35)}
+.step.done .step-num{background:var(--green);color:#fff}
+.step.pending .step-num{background:var(--surf2);color:var(--text3);border:2px solid var(--border)}
+.step-line{flex:1;height:2px;background:var(--border);border-radius:1px}
+.step-line.done{background:var(--green)}
+.card{background:var(--surf);border:1.5px solid var(--border);border-radius:var(--rlg);box-shadow:var(--sh);margin-bottom:16px;overflow:hidden}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .15s;font-family:inherit}
+.btn-pri{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;box-shadow:0 3px 10px rgba(244,114,182,.35)}
+.btn-pri:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(244,114,182,.45)}
+.btn-pri:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-sec{background:var(--surf2);color:var(--text);border:1.5px solid var(--border)}
+.btn-sec:hover{background:#EAE6FF}
+.btn-green{background:linear-gradient(135deg,#10B981,var(--green));color:#fff;box-shadow:0 3px 10px rgba(16,185,129,.3)}
+.btn-green:hover{transform:translateY(-1px)}
+.btn-wide{width:100%;justify-content:center;padding:13px}
+.btn-back{background:transparent;color:var(--purple2);font-size:13px;font-weight:700;padding:8px 4px;cursor:pointer;border:none;font-family:inherit;display:flex;align-items:center;gap:4px}
+.svc-card{cursor:pointer;padding:15px;display:flex;align-items:center;gap:12px;transition:all .15s}
+.svc-card:hover{background:var(--pink-soft)}
+.svc-card.selected{border:2px solid var(--pink);background:var(--pink-soft);border-radius:var(--rlg)}
+.svc-emoji{font-size:32px;flex-shrink:0;width:48px;text-align:center}
+.svc-info{flex:1}
+.svc-name{font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;color:var(--text)}
+.svc-price{font-size:13px;font-weight:700;color:var(--pink2)}
+.svc-desc{font-size:11.5px;color:var(--text3);margin-top:2px}
+.avail-badge{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;margin-top:4px}
+.avail-ok{background:var(--green-bg);color:var(--green)}
+.avail-warn{background:var(--amber-bg);color:var(--amber)}
+.avail-no{background:var(--red-bg);color:var(--red)}
+.cal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1.5px solid var(--border)}
+.cal-month{font-family:'Nunito',sans-serif;font-size:15px;font-weight:800}
+.cal-nav{display:flex;gap:6px}
+.cal-nav button{width:30px;height:30px;border-radius:7px;border:1.5px solid var(--border);background:var(--surf2);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;color:var(--text2);font-family:inherit}
+.cal-nav button:hover{background:var(--surf3);border-color:var(--border2)}
+.cal-body{padding:12px 16px}
+.cal-day-hdr{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin-bottom:4px}
+.cal-day-hdr span{font-size:10.5px;font-weight:700;color:var(--text3);padding:4px 0}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;border-radius:9px;cursor:pointer;position:relative;transition:all .12s}
+.cal-day.past{color:var(--text3);opacity:.35;cursor:not-allowed}
+.cal-day.avail{color:var(--text);cursor:pointer}
+.cal-day.avail:hover{background:var(--purple-soft);color:var(--purple2)}
+.cal-day.booked{color:var(--red);cursor:not-allowed;background:var(--red-bg);text-decoration:line-through}
+.cal-day.start,.cal-day.end{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;font-weight:800;box-shadow:0 2px 8px rgba(244,114,182,.3)}
+.cal-day.range{background:var(--pink-soft);color:var(--pink2)}
+.cal-day .dot{position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%}
+.cal-day.booked .dot{background:var(--red)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:11px;color:var(--text3);padding:10px 18px}
+.legend span{display:flex;align-items:center;gap:5px}
+.legend .d{width:10px;height:10px;border-radius:3px;display:inline-block}
+.range-bar{padding:12px 18px;background:var(--pink-soft);border-top:1.5px solid var(--border);display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--navy);font-weight:600}
+.range-bar .r{flex:1}
+label{display:block;font-size:10.5px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+input,select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:9px;font-size:13.5px;font-family:inherit;color:var(--text);outline:none;background:var(--surf);transition:border .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(244,114,182,.1)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.fr{margin-bottom:12px}
+.summary{background:var(--pink-soft);border:1.5px solid #FBCFE8;border-radius:var(--r);padding:14px 16px;line-height:1.9;font-size:13px;color:var(--navy)}
+.sum-row{display:flex;justify-content:space-between;padding:2px 0}
+.sum-row.bold{font-weight:800;font-size:14px;border-top:1px solid #FBCFE8;margin-top:4px;padding-top:8px}
+.success{text-align:center;padding:32px 20px}
+.success-icon{font-size:52px;margin-bottom:12px}
+.success h2{font-family:'Nunito',sans-serif;font-size:22px;font-weight:900;color:var(--green);margin-bottom:8px}
+.success p{font-size:13.5px;color:var(--text2);margin-bottom:6px}
+.error-msg{color:var(--red);font-size:12.5px;font-weight:700;min-height:18px;margin-bottom:8px}
+.pad{padding:16px 18px}
+.dist-result{background:var(--green-bg);border:1.5px solid var(--green-b);border-radius:var(--r);padding:12px 15px;margin-top:12px;font-size:13px;color:var(--green);font-weight:600;display:none}
+/* Address autocomplete dropdown */
+.addr-wrap{position:relative}
+.addr-drop{position:absolute;z-index:30;top:100%;left:0;right:0;margin-top:2px;background:var(--surf);border:1.5px solid var(--border);border-radius:var(--rlg);box-shadow:var(--sh2);max-height:220px;overflow-y:auto;display:none}
+.addr-drop.open{display:block}
+.addr-item{padding:10px 14px;font-size:13px;color:var(--text);cursor:pointer;border-bottom:1px solid var(--surf2);display:flex;align-items:flex-start;gap:8px}
+.addr-item:last-child{border-bottom:none}
+.addr-item:hover{background:var(--purple-soft)}
+.addr-item .addr-pin{color:var(--text3);margin-top:2px;flex-shrink:0}
+.addr-loading{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text3)}
+/* Map fallback */
+.map-fallback{border-top:1.5px solid var(--border);margin-top:14px;padding-top:14px;display:none}
+.map-fallback.open{display:block}
+.map-toggle{font-size:12px;color:var(--purple2);cursor:pointer;font-weight:600;margin-top:8px;display:inline-block}
+.map-toggle:hover{text-decoration:underline}
+.v2-slot-btn{display:block;width:100%;padding:9px 4px;border:1.5px solid var(--border);border-radius:8px;background:#fff;font-size:12px;font-weight:700;cursor:pointer;text-align:center;font-family:inherit;transition:all .12s;}
+.v2-slot-btn:hover{border-color:var(--purple2);background:var(--purple-soft);color:var(--purple2);}
+.v2-slot-btn.v2-active{border-color:var(--purple2);background:var(--purple2);color:#fff;}
+.map-container{width:100%;height:220px;border-radius:var(--r);border:1.5px solid var(--border);margin-bottom:10px;overflow:hidden}
+@media(max-width:480px){
+  .row{grid-template-columns:1fr}
+  .topbar{padding:12px 16px}
+  .layout{padding:16px 10px}
+  .step-label{display:none}
+}
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">🏰</div>
+  <div>
+    <div class="topbar-title">Innova Group — Staff Booking</div>
+    <div class="topbar-sub" id="topbar-sub">Loading…</div>
+  </div>
+  <div class="topbar-right">
+    <a href="innova-index.html" style="color:rgba(255,255,255,.7);font-size:12px;font-weight:700;text-decoration:none;">← Dashboard</a>
+  </div>
+</div>
+
+<div class="layout">
+
+<div class="steps" id="step-bar">
+  <div class="step active" id="step-1"><div class="step-num">1</div><span class="step-label">Item</span></div><div class="step-line"></div>
+  <div class="step pending" id="step-2"><div class="step-num">2</div><span class="step-label">Dates</span></div><div class="step-line"></div>
+  <div class="step pending" id="step-3"><div class="step-num">3</div><span class="step-label">Location</span></div><div class="step-line"></div>
+  <div class="step pending" id="step-4"><div class="step-num">4</div><span class="step-label">Details</span></div><div class="step-line"></div>
+  <div class="step pending" id="step-5"><div class="step-num">5</div><span class="step-label">Confirm</span></div>
+</div>
+
+<!-- ═══ STEP 1: Choose Item ═══ -->
+<div id="view-step1">
+  <h2 style="font-family:'Nunito',sans-serif;font-size:17px;font-weight:800;margin-bottom:4px">Choose an Inflatable</h2>
+  <p style="font-size:12px;color:var(--text3);margin-bottom:12px;">Tap to select — you can choose more than one.</p>
+  <div class="card" id="svc-list"><div class="pad" style="text-align:center;color:var(--text3);padding:28px">Loading services…</div></div>
+  <div id="step1-selection-bar" style="display:none;background:var(--purple-soft);border:1.5px solid var(--border2);border-radius:var(--r);padding:10px 14px;margin:10px 0;font-size:12.5px;font-weight:700;color:var(--purple2);"></div>
+  <button class="btn btn-pri btn-wide" onclick="goStep2()" id="btn-step1" disabled>Continue →</button>
+</div>
+
+<!-- ═══ EXTRAS: Choose Add-ons ═══ -->
+<div id="view-extras" style="display:none">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <h2 style="font-family:'Nunito',sans-serif;font-size:17px;font-weight:800">Add Extras</h2>
+    <button class="btn-back" onclick="showStep(1)">← Back</button>
+  </div>
+  <div id="extras-item-badge" style="margin-bottom:10px"></div>
+  <p style="font-size:12.5px;color:var(--text3);margin-bottom:12px">Optional add-ons for this booking. Select extras below or skip if none are needed.</p>
+  <div class="card pad" id="extras-list"></div>
+
+  <!-- Operators section — shown when product has operator included -->
+  <div id="ops-section" style="display:none;margin-top:14px;">
+    <div style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:10px;color:var(--navy);">👤 Operators</div>
+    <div id="ops-base" style="font-size:13px;font-weight:700;color:var(--green);background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:9px 12px;margin-bottom:10px;"></div>
+    <div style="margin-bottom:10px;">
+      <label style="font-size:12px;font-weight:700;color:var(--text3);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;">Number of kids at the party</label>
+      <input type="number" id="ops-kids" min="1" placeholder="e.g. 15"
+        style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;background:#fff;"
+        oninput="updateOperators()">
+    </div>
+    <div id="ops-extra-note" style="display:none;font-size:13px;font-weight:700;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:9px 12px;"></div>
+  </div>
+
+  <div class="error-msg" id="extras-err"></div>
+  <div style="display:flex;gap:8px;margin-top:12px">
+    <button class="btn btn-sec" onclick="goStep1()">← Back</button>
+    <button class="btn btn-sec" style="flex:1" onclick="skipExtras()">Skip Extras →</button>
+    <button class="btn btn-pri" style="flex:1" onclick="showStep(2);initCalendar()" id="btn-extras">Continue →</button>
+  </div>
+</div>
+
+<!-- ═══ STEP 2: Pick Dates ═══ -->
+<div id="view-step2" style="display:none">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <h2 style="font-family:'Nunito',sans-serif;font-size:17px;font-weight:800">Select Dates</h2>
+    <button class="btn-back" onclick="goStep1()">← Back</button>
+  </div>
+  <div id="cal-item-badge" style="margin-bottom:10px"></div>
+  <div class="card">
+    <div class="cal-head">
+      <div class="cal-nav"><button onclick="calNav(-1)">‹</button></div>
+      <div class="cal-month" id="cal-month-lbl"></div>
+      <div class="cal-nav"><button onclick="calNav(1)">›</button></div>
+    </div>
+    <div class="cal-body">
+      <div class="cal-day-hdr"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+    <div class="legend">
+      <span><span class="d" style="background:var(--surf);border:1.5px solid var(--border)"></span> Available</span>
+      <span><span class="d" style="background:var(--red-bg);border:1px solid var(--red-b)"></span> Booked</span>
+      <span><span class="d" style="background:var(--pink-soft)"></span> Selected range</span>
+    </div>
+    <div class="range-bar" id="range-bar" style="display:none"></div>
+  </div>
+
+  <!-- Time slot picker — shown for hourly products after date is tapped -->
+  <div id="v2-slot-section" style="display:none;margin-top:12px;">
+    <div style="font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;margin-bottom:8px;color:var(--purple2);">🕐 Select Time Slot</div>
+    <div id="v2-slot-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:8px;"></div>
+    <div id="v2-extra-section" style="display:none;margin-bottom:8px;">
+      <label style="font-size:12px;font-weight:700;color:var(--text3);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;">Additional Hours</label>
+      <select id="v2-extra-sel" onchange="updateV2SlotSummary()" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;background:#fff;">
+        <option value="0">No extra hours</option>
+      </select>
+    </div>
+    <div id="v2-slot-summary" style="display:none;font-size:13px;font-weight:700;color:var(--purple2);padding:8px 12px;background:var(--purple-soft);border-radius:8px;margin-bottom:8px;"></div>
+  </div>
+
+  <div class="error-msg" id="date-err"></div>
+  <div style="display:flex;gap:8px">
+    <button class="btn btn-sec" onclick="goStep1()">← Back</button>
+    <button class="btn btn-pri" style="flex:1" onclick="goStep3()" id="btn-step2" disabled>Continue →</button>
+  </div>
+</div>
+
+<!-- ═══ STEP 3: Delivery Location ═══ -->
+<div id="view-step3" style="display:none">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <h2 style="font-family:'Nunito',sans-serif;font-size:17px;font-weight:800">Delivery Address</h2>
+    <button class="btn-back" onclick="goStep2()">← Back</button>
+  </div>
+  <p style="font-size:12.5px;color:var(--text3);margin-bottom:14px">Start typing the event address — we'll find it and calculate the delivery distance.</p>
+  <div class="addr-wrap">
+    <div class="fr"><label>Delivery Address *</label>
+      <input id="a-address" placeholder="e.g. 14 Party Avenue, Sandton…" autocomplete="off" oninput="onAddressInput(this.value)" onfocus="onAddressFocus()" onblur="onAddressBlur()">
+      <span class="addr-loading" id="addr-loading" style="display:none">Searching…</span>
+    </div>
+    <div class="addr-drop" id="addr-drop"></div>
+  </div>
+  <p style="font-size:10.5px;color:var(--text3);margin-top:4px">Type at least 3 characters to search addresses in South Africa</p>
+
+  <div class="dist-result" id="dist-result"></div>
+  <div class="error-msg" id="dist-err"></div>
+
+  <!-- Map fallback -->
+  <span class="map-toggle" onclick="toggleMapFallback()">📍 Can't find the address? Place it on the map instead</span>
+  <div class="map-fallback" id="map-fallback">
+    <p style="font-size:11.5px;color:var(--text3);margin-bottom:8px">Click the map to place a pin at the event location, then enter the address below.</p>
+    <div class="map-container" id="fallback-map"></div>
+    <div class="fr"><label>Manual Address</label><input id="a-manual" placeholder="e.g. 14 Party Avenue, Sandton, Johannesburg" oninput="onManualAddress()"></div>
+    <p style="font-size:10.5px;color:var(--text3);margin-top:2px" id="map-coord-info"></p>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:12px">
+    <button class="btn btn-sec" onclick="goStep2()">← Back</button>
+    <button class="btn btn-pri" style="flex:1" onclick="goStep4()" id="btn-step3" disabled>Continue →</button>
+  </div>
+</div>
+
+<!-- ═══ STEP 4: Customer Details ═══ -->
+<div id="view-step4" style="display:none">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <h2 style="font-family:'Nunito',sans-serif;font-size:17px;font-weight:800">Customer Details</h2>
+    <button class="btn-back" onclick="goStep3()">← Back</button>
+  </div>
+  <div class="row">
+    <div class="fr"><label>First Name *</label><input id="c-fname" placeholder="Sarah"></div>
+    <div class="fr"><label>Last Name</label><input id="c-lname" placeholder="Johnson"></div>
+  </div>
+  <div class="row">
+    <div class="fr"><label>Phone Number *</label><input id="c-phone" type="tel" placeholder="082 000 0000"></div>
+    <div class="fr"><label>Email *</label><input id="c-email" type="email" placeholder="sarah@email.com"></div>
+  </div>
+  <div class="row">
+    <div class="fr">
+      <label>Event Type</label>
+      <select id="c-event">
+        <option value="Birthday Party">🎂 Birthday Party</option>
+        <option value="Corporate Event">🏢 Corporate Event</option>
+        <option value="Gender Reveal">🎀 Gender Reveal</option>
+        <option value="Wedding">💍 Wedding</option>
+        <option value="School Fun Day">🏫 School Fun Day</option>
+        <option value="Photoshoot">📷 Photoshoot</option>
+        <option value="Other">✨ Other</option>
+      </select>
+    </div>
+    <div></div>
+  </div>
+  <div class="fr"><label>Balloon Colours (optional)</label><input id="c-balloons" placeholder="e.g. Pink and white"></div>
+  <div class="fr"><label>Special Requests / Notes</label><textarea id="c-notes" rows="2" placeholder="Any setup notes, access requirements…"></textarea></div>
+  <div class="error-msg" id="detail-err"></div>
+  <div style="display:flex;gap:8px">
+    <button class="btn btn-sec" onclick="goStep3()">← Back</button>
+    <button class="btn btn-pri" style="flex:1" onclick="goStep5()">Review Booking →</button>
+  </div>
+</div>
+
+<!-- ═══ STEP 5: Confirm ═══ -->
+<div id="view-step5" style="display:none">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <h2 style="font-family:'Nunito',sans-serif;font-size:17px;font-weight:800">Confirm Booking</h2>
+    <button class="btn-back" onclick="goStep4()">← Back</button>
+  </div>
+  <div class="summary" id="confirm-summary"></div>
+
+  <!-- Status selector — staff only -->
+  <div class="fr" style="margin-top:14px">
+    <label>Booking Status</label>
+    <select id="s-status">
+      <option value="pending">⏳ Pending</option>
+      <option value="confirmed">✅ Confirmed</option>
+    </select>
+  </div>
+
+  <div class="error-msg" id="confirm-err"></div>
+  <button class="btn btn-green btn-wide" onclick="submitBooking()" id="btn-submit">✅ Save Booking</button>
+</div>
+
+<!-- ═══ SUCCESS ═══ -->
+<div id="view-success" style="display:none">
+  <div class="card success">
+    <div class="success-icon">✅</div>
+    <h2>Booking Saved!</h2>
+    <p>The booking has been saved successfully.</p>
+    <p style="font-weight:700;margin-top:8px;" id="success-status-note"></p>
+    <div style="margin-top:16px;">
+      <button class="btn btn-sec" onclick="window.location.href='innova-index.html'">← Back to Dashboard</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// STAFF AUTH CHECK
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+var staffName=sessionStorage.getItem('ig-current-user')||'';
+if(!staffName){window.location.href='innova-index.html';}
+// Set topbar
+(function(){
+  var sub=document.getElementById('topbar-sub');
+  if(sub)sub.textContent='Logged in as '+staffName;
+})();
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// TURSO CONFIG
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+var TURSO_URL='https://innova-djjackson86-sketch.aws-eu-west-1.turso.io';
+var TURSO_TOKEN='eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJleHAiOjE4MDg5MzExMTIsImdpZCI6ImZmNzliYWYzLWEwYzYtNDVjYy1iNjdkLTU1MjllNGQ0YTA2YiIsImlhdCI6MTc3NzM5NTExMiwicmlkIjoiYTRlZmFmNTAtYzQ0ZC00YzRjLWI3OTgtMjQ0ZjYyYWI5MmVjIn0.waVq2Pp9F1oBoR1xM0j6DSExClezVMmBZRjQ9PW96tFASRWNgFKpYGUjk7VmhaK-ltPG0XsFTSyX1CRiqmd-Bw';
+
+async function tursoQuery(sql,args){
+  var typedArgs=(args||[]).map(function(v){
+    if(v===null||v===undefined)return{type:'null'};
+    if(typeof v==='number')return Number.isInteger(v)?{type:'integer',value:String(v)}:{type:'float',value:String(v)};
+    return{type:'text',value:String(v)};
+  });
+  var res=await fetch(TURSO_URL+'/v2/pipeline',{
+    method:'POST',
+    headers:{'Authorization':'Bearer '+TURSO_TOKEN,'Content-Type':'application/json'},
+    body:JSON.stringify({requests:[{type:'execute',stmt:{sql:sql,args:typedArgs}},{type:'close'}]})
+  });
+  if(!res.ok)throw new Error('Turso HTTP '+res.status);
+  var json=await res.json();
+  if(json.results[0].type==='error')throw new Error(json.results[0].error.message);
+  var result=json.results[0].response.result;
+  var cols=result.cols.map(function(c){return c.name;});
+  return{rows:result.rows.map(function(row){
+    var obj={};
+    cols.forEach(function(col,i){
+      var cell=row[i];
+      var val=(cell&&cell.type!=='null')?cell.value:null;
+      if(cell&&(cell.type==='integer'||cell.type==='float')&&val!==null)val=Number(val);
+      obj[col]=val;
+    });
+    return obj;
+  }),lastInsertRowid:result.last_insert_rowid?Number(result.last_insert_rowid):null};
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// PRODUCT CATALOGUE (hardcoded — no Turso dependency)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+var IMG_BASE='https://img1.wsimg.com/isteam/ip/07d43448-e509-440b-a67d-0baa598f6248/';
+var PRODUCTS=[
+  {id:1, name:'Jumping Castle – Standard A', category:'Jumping Castles', price_full_day:700,  emoji:'🏰', unit:'CASTLE_STD_A'},
+  {id:2, name:'Jumping Castle – Standard B', category:'Jumping Castles', price_full_day:700,  emoji:'🏰', unit:'CASTLE_STD_B'},
+  {id:3, name:'Jumping Castle – Combo',      category:'Jumping Castles', price_full_day:650,  emoji:'🎪', unit:'CASTLE_COMBO'},
+  {id:4, name:'Jumping Castle – Standard C', category:'Jumping Castles', price_full_day:700,  emoji:'🏰', unit:'CASTLE_STD_C'},
+  {id:5, name:'Jumping Castle Weekend Pkg',  category:'Jumping Castles', price_full_day:1000, emoji:'🎉', unit:'CASTLE_WEEKEND'},
+  {id:6, name:'Mechanical Bull Rental',      category:'Adult & Corporate', price_full_day:5500, emoji:'🐂', unit:'MECH_BULL'},
+  {id:7, name:'Mechanical Bull – Package 2', category:'Adult & Corporate', price_full_day:5500, emoji:'🐂', unit:'MECH_BULL_2'},
+  {id:8, name:'Bungee Trampoline',           category:'Attractions',      price_full_day:350,  emoji:'🦘', unit:'BUNGEE_TRAMP'},
+];
+// Product images loaded from Turso in loadConfig()
+
+function getSiblings(name){
+  var prod=PRODUCTS.find(function(p){return p.name===name;});
+  if(!prod)return[name];
+  var u=prod.unit;
+  return PRODUCTS.filter(function(p){return p.unit===u;}).map(function(p){return p.name;});
+}
+
+// Parse item field — handles both single string and JSON array (multi-item bookings)
+function parseItemNames(item){
+  if(!item)return[];
+  if(item.trim().startsWith('[')){try{return JSON.parse(item);}catch(e){}}
+  return[item];
+}
+
+function getProductById(id){return PRODUCTS.find(function(p){return p.id===id;});}
+
+var CAT_EMOJI={'Jumping Castles':'🏰','Adult & Corporate':'🐂','Attractions':'🦘','Extras':'🎈'};
+var PRODUCT_IMAGES={};  // populated in loadConfig, used by loadProductsFromDB
+
+async function loadProductsFromDB(){
+  try{
+    var res=await tursoQuery("SELECT * FROM ig_products WHERE status='active' AND category!='Extras' ORDER BY category,name ASC");
+    if(!res.rows||!res.rows.length) return; // keep hardcoded defaults if DB empty
+    var SEED=PRODUCTS; // keep hardcoded for unit/emoji inheritance
+    PRODUCTS=res.rows.map(function(row){
+      var existing=SEED.find(function(p){return p.name===row.name;});
+      var unit=existing?existing.unit:row.name.toUpperCase().replace(/[^A-Z0-9]/g,'_');
+      var emoji=existing?existing.emoji:(CAT_EMOJI[row.category]||'🎈');
+      var img=PRODUCT_IMAGES[row.name]||(existing?existing.img:'')||'';
+      return{id:row.id,name:row.name,category:row.category,price_full_day:parseFloat(row.price_full_day)||0,emoji:emoji,unit:unit,img:img,description:row.description||''};
+    });
+  }catch(e){console.warn('loadProductsFromDB:',e);}
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// TRANSPORT RATES (configurable via localStorage)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+var DEPOT_ADDRESS='Gauteng, South Africa';
+var DEPOT_LAT=-25.9875;
+var DEPOT_LNG=28.0473;
+var TRANSPORT_RATES=[
+  {maxKm:15, fee:300},
+  {maxKm:30, fee:300},
+  {maxKm:50, fee:300},
+];
+// Transport + extras loaded from Turso in loadConfig()
+
+// ── EXTRAS ── defaults (overridden by Turso in loadConfig)
+var EXTRAS=[
+  {name:'Extra Blower Motor',     price:200, availableFor:null},
+  {name:'50m Extension Cord',     price:150, availableFor:null},
+  {name:'10m Extension Cord',     price:50,  availableFor:null},
+  {name:'Weekend Package Upgrade',price:300, availableFor:['Jumping Castles']},
+];
+var EXTRAS_MAP={};
+EXTRAS.forEach(function(e){EXTRAS_MAP[e.name]=e;});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// STATE
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+var bookings=[];
+var selectedProducts=[];  // array of selected product objects (multi-select)
+var startDate=null,endDate=null;
+var calYear,calMonth;
+var selectedSlot=null;
+
+// ── Config — all loaded from Turso ig_settings in loadConfig() ───────────────
+var PRODUCT_SLOTS={};
+var DEPOSIT_PCT=50;
+var _TG_CFG={};
+var RESTRICTED_SUBURBS=[];
+
+async function sendTelegram(text){
+  try{
+    var cfg=_TG_CFG||{};
+    if(!cfg.token||!cfg.chatId)return;
+    await fetch('https://api.telegram.org/bot'+cfg.token+'/sendMessage',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:cfg.chatId,text:text,parse_mode:'HTML'})
+    });
+  }catch(e){console.warn('Telegram notification failed:',e);}
+}
+
+function getProdSlot(name){
+  var v=PRODUCT_SLOTS[name];
+  if(!v)return{type:'hourly',hours:4,extraHours:0,extraRate:0};
+  if(typeof v==='string')return v==='full_day'?{type:'full_day'}:{type:'hourly',hours:4,extraHours:0,extraRate:0};
+  return v;
+}
+
+function getSelectedBookingSlotProduct(){
+  if(!selectedProducts.length)return null;
+  return selectedProducts.find(function(p){return getProdSlot(p.name).type==='hourly';})||selectedProducts[0];
+}
+
+// Extra hours config across all selected products:
+// maxE  = min extraHours among hourly products (0 = no extra hours allowed)
+// combinedRate = sum of extraRate from hourly products that have a per-hour cost
+function getExtraHoursConfig(){
+  var hourly=selectedProducts.filter(function(p){return getProdSlot(p.name).type==='hourly';});
+  if(!hourly.length)return{maxE:0,combinedRate:0};
+  var maxE=Math.min.apply(null,hourly.map(function(p){return getProdSlot(p.name).extraHours||0;}));
+  var combinedRate=hourly.reduce(function(s,p){return s+(getProdSlot(p.name).extraRate||0);},0);
+  return{maxE:maxE,combinedRate:combinedRate};
+}
+
+// PRODUCT_OPS loaded from Turso in loadConfig()
+var PRODUCT_OPS={};
+function getProdOps(name){
+  var v=PRODUCT_OPS[name];
+  return v||{operatorIncluded:false,maxKids:0,extraOperatorCost:0,maxAge:0};
+}
+
+var operatorCost=0;
+var kidsCount=0;
+var calculatedDistance=null;
+var transportFee=0;
+var customerAddress='';
+var addressLat=null,addressLng=null;
+var selectedExtras=[];  // [{name, price, qty}, ...]
+var _addrDebounce=null,_addrFocused=false;
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// LOAD DATA
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+async function loadConfig(){
+  try{
+    var res=await tursoQuery('SELECT key,value FROM ig_settings');
+    var cfg={};
+    res.rows.forEach(function(r){try{cfg[r.key]=JSON.parse(r.value);}catch(e){cfg[r.key]=r.value;}});
+    var t=cfg['ig-transport']||{};
+    if(t.depotAddress)DEPOT_ADDRESS=t.depotAddress;
+    if(t.depotLat!=null)DEPOT_LAT=t.depotLat;
+    if(t.depotLng!=null)DEPOT_LNG=t.depotLng;
+    if(t.rates&&t.rates.length)TRANSPORT_RATES=t.rates;
+    var s=cfg['ig-settings']||{};
+    if(s.depositPct!=null)DEPOSIT_PCT=parseInt(s.depositPct,10)||50;
+    PRODUCT_SLOTS=cfg['ig-product-slots']||{};
+    PRODUCT_OPS=cfg['ig-product-ops']||{};
+    _TG_CFG=cfg['ig-telegram']||{};
+    RESTRICTED_SUBURBS=cfg['ig-restricted-suburbs']||[];
+    PRODUCT_IMAGES=cfg['ig-product-images']||{};
+    PRODUCTS.forEach(function(p){if(PRODUCT_IMAGES[p.name])p.img=PRODUCT_IMAGES[p.name];});
+  }catch(e){console.warn('loadConfig:',e);}
+  try{
+    var er=await tursoQuery('SELECT data FROM ig_extras');
+    if(er.rows.length){
+      EXTRAS=er.rows.map(function(r){try{var d=JSON.parse(r.data);return{name:d.name,price:d.price||0,availableFor:d.availableFor||null,img:d.img||''};}catch(e){return null;}}).filter(Boolean);
+      EXTRAS_MAP={};EXTRAS.forEach(function(e){EXTRAS_MAP[e.name]=e;});
+    }
+  }catch(e){}
+}
+
+async function loadAll(){
+  await loadConfig();
+  await loadProductsFromDB();
+  renderServices();
+  try{
+    var b=await tursoQuery(
+      "SELECT id,item,date,edate,status FROM ig_bookings WHERE status IN ('pending','confirmed','out')"
+    );
+    bookings=b.rows;
+  }catch(e){console.warn('Initial availability load failed (will retry when calendar opens):',e);}
+}
+
+function pad(n){return String(n).padStart(2,'0');}
+function today(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function fmtDate(s){if(!s)return'';var d=new Date(s+'T00:00:00');return d.toLocaleDateString('en-ZA',{weekday:'short',day:'numeric',month:'short',year:'numeric'});}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// STEP 1: CHOOSE ITEM
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function renderServices(){
+  var el=document.getElementById('svc-list');
+  var mainProducts=PRODUCTS.filter(function(p){return p.category!=='Extras';});
+  if(!mainProducts.length){el.innerHTML='<div class="pad" style="text-align:center;color:var(--text3);padding:28px">No services available — check back soon!</div>';return;}
+  el.innerHTML=mainProducts.map(function(p){
+    var emoji=p.emoji||'🎈';
+    var price=p.price_full_day||0;
+    var isSel=selectedProducts.some(function(x){return x.id===p.id;});
+    var sel=isSel?' selected':'';
+    var thumb=p.img?'<div class="svc-emoji" style="background:var(--surf2);display:flex;align-items:center;justify-content:center"><img src="'+p.img+'" style="width:48px;height:48px;object-fit:cover;border-radius:8px" onerror="this.parentElement.innerHTML=\''+emoji+'\'"></div>':'<div class="svc-emoji">'+emoji+'</div>';
+    var indicator=isSel
+      ?'<span style="font-size:20px;color:var(--purple2);font-weight:900;">✓</span>'
+      :'<span style="font-size:22px;color:var(--text3)">+</span>';
+    return'<div class="svc-card'+sel+'" onclick="toggleItem('+p.id+')">'+thumb+
+      '<div class="svc-info"><div class="svc-name">'+p.name+'</div>'+
+      '<div class="svc-price">R'+price.toLocaleString('en-ZA')+(function(){var sl=getProdSlot(p.name);return sl.type==='hourly'?' / '+sl.hours+'h':' / day';})()+'</div>'+
+      (p.description?'<div class="svc-desc">'+p.description+'</div>':'')+
+      (function(){
+        var o=getProdOps(p.name);var tags=[];
+        if(o.operatorIncluded)tags.push('👤 Operator included'+(o.maxKids?' · max '+o.maxKids+' kids':''));
+        if(o.maxAge)tags.push('👶 Max age '+o.maxAge+' yrs');
+        return tags.length?'<div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:4px;">'+tags.map(function(t){return'<span style="font-size:10.5px;font-weight:700;color:var(--purple2);background:var(--purple-soft);padding:2px 8px;border-radius:20px;">'+t+'</span>';}).join('')+'</div>':'';
+      })()+
+      '</div>'+indicator+'</div>';
+  }).join('');
+  var bar=document.getElementById('step1-selection-bar');
+  if(bar){
+    if(selectedProducts.length===0){bar.style.display='none';}
+    else{
+      bar.style.display='';
+      bar.innerHTML='✓ '+selectedProducts.length+' item'+(selectedProducts.length>1?'s':'')+' selected: '
+        +selectedProducts.map(function(p){return p.name;}).join(' + ');
+    }
+  }
+}
+
+function toggleItem(id){
+  var prod=getProductById(id);
+  if(!prod)return;
+  var idx=selectedProducts.findIndex(function(p){return p.id===id;});
+  if(idx>=0){selectedProducts.splice(idx,1);}
+  else{selectedProducts.push(prod);}
+  renderServices();
+  document.getElementById('btn-step1').disabled=selectedProducts.length===0;
+  startDate=null;endDate=null;
+  selectedExtras=[];
+}
+
+function goStep1(){
+  selectedExtras=[];
+  showStep(1);
+}
+
+function goStep2(){
+  if(!selectedProducts.length)return;
+  var compatExtras=getCompatibleExtrasMulti();
+  var hasOperator=selectedProducts.some(function(p){return getProdOps(p.name).operatorIncluded;});
+  if(compatExtras.length>0||hasOperator){
+    selectedExtras=[];
+    showExtrasPage(compatExtras);
+  }else{
+    selectedExtras=[];
+    operatorCost=0;kidsCount=0;
+    showStep(2);
+    initCalendar();
+  }
+}
+
+// ── EXTRAS PAGE ────────────────────────────────────────────────────────────────
+function getCompatibleExtras(category){
+  return EXTRAS.filter(function(e){
+    return e.availableFor===null||e.availableFor.indexOf(category)!==-1;
+  });
+}
+function getCompatibleExtrasMulti(){
+  var seen={};var result=[];
+  selectedProducts.forEach(function(p){
+    getCompatibleExtras(p.category).forEach(function(e){
+      if(!seen[e.name]){seen[e.name]=true;result.push(e);}
+    });
+  });
+  return result;
+}
+
+function showExtrasPage(compatExtras){
+  for(var i=1;i<=5;i++){var v=document.getElementById('view-step'+i);if(v)v.style.display='none';}
+  document.getElementById('view-success').style.display='none';
+  document.getElementById('view-extras').style.display='block';
+  for(var j=1;j<=5;j++){
+    var st=document.getElementById('step-'+j);
+    if(st)st.className='step '+(j<2?'done':j===2?'active':'pending');
+    if(j<5){
+      var ln=document.querySelectorAll('.step-line')[j-1];
+      if(ln)ln.className='step-line'+(j<2?' done':'');
+    }
+  }
+  document.getElementById('extras-item-badge').innerHTML=selectedProducts.map(function(p){
+    var catEmoji=CAT_EMOJI[p.category]||'🎈';
+    return'<span style="background:var(--purple-soft);padding:5px 10px;border-radius:20px;font-size:12px;font-weight:700;color:var(--purple2);margin-right:4px;">'+catEmoji+' '+p.name+'</span>';
+  }).join('');
+  renderExtras(compatExtras);
+  initOpsSection();
+}
+
+function renderExtras(compatExtras){
+  var el=document.getElementById('extras-list');
+  if(!compatExtras.length){
+    el.innerHTML='<div style="text-align:center;color:var(--text3);padding:20px">No extras available for this item.</div>';
+    return;
+  }
+  var totalExtra=selectedExtras.reduce(function(s,e){return s+e.price*(e.qty||1);},0);
+  el.innerHTML='<div style="margin-bottom:10px">'+
+    compatExtras.map(function(e){
+      var sel=selectedExtras.find(function(x){return x.name===e.name;});
+      var qty=sel?sel.qty:0;
+      var safeName=e.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      var thumb=e.img
+        ?'<img src="'+e.img+'" style="width:44px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0;">'
+        :'<div style="width:44px;height:44px;border-radius:8px;background:var(--surf2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🎈</div>';
+      return'<div style="display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--border);">'+
+        thumb+
+        '<div style="flex:1;">'+
+          '<div style="font-weight:700;font-size:13.5px;color:var(--text)">'+e.name+'</div>'+
+          (e.price>0?'<div style="font-size:12.5px;font-weight:700;color:var(--pink2)">+R'+e.price.toLocaleString('en-ZA')+' each</div>':'<div style="font-size:12px;color:var(--text3)">No charge</div>')+
+        '</div>'+
+        '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">'+
+          '<button onclick="setExtraQty(\''+safeName+'\','+e.price+',-1)" style="width:30px;height:30px;border-radius:50%;border:1.5px solid var(--border2);background:'+(qty>0?'var(--purple2)':'var(--surf2)')+';color:'+(qty>0?'#fff':'var(--text3)')+';font-size:18px;font-weight:700;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;">−</button>'+
+          '<span style="min-width:20px;text-align:center;font-weight:800;font-size:15px;color:'+(qty>0?'var(--purple2)':'var(--text3)')+'">'+qty+'</span>'+
+          '<button onclick="setExtraQty(\''+safeName+'\','+e.price+',1)" style="width:30px;height:30px;border-radius:50%;border:1.5px solid var(--border2);background:var(--purple2);color:#fff;font-size:18px;font-weight:700;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;">+</button>'+
+        '</div>'+
+      '</div>';
+    }).join('')+
+    '</div>'+
+    (totalExtra>0?'<div style="text-align:right;font-weight:800;color:var(--purple2);padding:8px 0 0;border-top:1.5px solid var(--border)">Extras total: R'+totalExtra.toLocaleString('en-ZA')+'</div>':'');
+  document.getElementById('extras-err').textContent='';
+}
+
+function setExtraQty(name,price,delta){
+  var idx=selectedExtras.findIndex(function(e){return e.name===name;});
+  if(idx>=0){
+    selectedExtras[idx].qty=(selectedExtras[idx].qty||1)+delta;
+    if(selectedExtras[idx].qty<=0)selectedExtras.splice(idx,1);
+  }else if(delta>0){
+    selectedExtras.push({name:name,price:price,qty:1});
+  }
+  renderExtras(getCompatibleExtrasMulti());
+}
+
+function skipExtras(){
+  selectedExtras=[];
+  operatorCost=0;
+  kidsCount=0;
+  showStep(2);
+  initCalendar();
+}
+
+// ── OPERATORS SECTION ─────────────────────────────────────────────────────────
+function initOpsSection(){
+  var opItems=selectedProducts.filter(function(p){return getProdOps(p.name).operatorIncluded;});
+  var sec=document.getElementById('ops-section');
+  if(!sec)return;
+  operatorCost=0;kidsCount=0;
+  document.getElementById('ops-kids').value='';
+  document.getElementById('ops-extra-note').style.display='none';
+  if(opItems.length>0){
+    sec.style.display='';
+    var totalMaxKids=opItems.reduce(function(s,p){return s+(getProdOps(p.name).maxKids||0);},0);
+    var baseEl=document.getElementById('ops-base');
+    if(opItems.length===1){
+      var o=getProdOps(opItems[0].name);
+      baseEl.textContent='✓ 1 Operator included'+(o.maxKids?' for up to '+o.maxKids+' kids':'');
+    }else{
+      baseEl.textContent='✓ '+opItems.length+' Operators included — combined capacity: '+totalMaxKids+' kids';
+    }
+  }else{
+    sec.style.display='none';
+  }
+}
+
+function updateOperators(){
+  var opItems=selectedProducts.filter(function(p){return getProdOps(p.name).operatorIncluded;});
+  if(!opItems.length)return;
+  var totalMaxKids=opItems.reduce(function(s,p){return s+(getProdOps(p.name).maxKids||0);},0);
+  var extraCost=getProdOps(opItems[0].name).extraOperatorCost||0;
+  var kids=parseInt(document.getElementById('ops-kids').value)||0;
+  kidsCount=kids;
+  var noteEl=document.getElementById('ops-extra-note');
+  if(totalMaxKids>0&&kids>totalMaxKids&&extraCost>0){
+    operatorCost=extraCost;
+    noteEl.style.display='';
+    noteEl.textContent='⚠️ '+kids+' kids exceeds combined capacity of '+totalMaxKids+' — 1 extra operator required (+R'+extraCost.toLocaleString('en-ZA')+')';
+  }else{
+    operatorCost=0;
+    noteEl.style.display='none';
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// STEP 2: CALENDAR
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function initCalendar(){
+  var d=new Date();calYear=d.getFullYear();calMonth=d.getMonth();
+  document.getElementById('cal-item-badge').innerHTML=selectedProducts.map(function(p){
+    var emoji=p.emoji||'🎈';
+    var price=p.price_full_day||0;
+    var sl=getProdSlot(p.name);
+    var slLabel=sl.type==='hourly'?' / '+sl.hours+'h':' / day';
+    return'<span style="background:var(--purple-soft);padding:5px 10px;border-radius:20px;font-size:12px;font-weight:700;color:var(--purple2);margin-right:4px;">'+emoji+' '+p.name+' — R'+price.toLocaleString('en-ZA')+slLabel+'</span>';
+  }).join('');
+  document.getElementById('btn-step2').disabled=true;
+  document.getElementById('date-err').textContent='';
+  startDate=null;endDate=null;
+  selectedSlot=null;
+  document.getElementById('v2-slot-section').style.display='none';
+  updateRangeBar();
+  renderCalendar();
+
+  tursoQuery(
+    "SELECT id,item,date,edate,status FROM ig_bookings WHERE status IN ('pending','confirmed','out')"
+  ).then(function(result){
+    bookings=result.rows;
+    renderCalendar();
+  }).catch(function(e){
+    console.warn('Availability refresh failed (using cached data):',e);
+  });
+}
+
+function isBooked(dateStr){
+  // b.item may be a plain string OR a JSON array string for multi-item bookings.
+  return selectedProducts.some(function(prod){
+    var siblings=getSiblings(prod.name);
+    return bookings.some(function(b){
+      if(b.status==='cancelled'||!b.date||b.date>dateStr||(b.edate||b.date)<dateStr)return false;
+      return parseItemNames(b.item).some(function(n){return siblings.indexOf(n)!==-1;});
+    });
+  });
+}
+
+function renderCalendar(){
+  var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-month-lbl').textContent=months[calMonth]+' '+calYear;
+  var first=new Date(calYear,calMonth,1).getDay();
+  var offset=(first===0?6:first-1);
+  var daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  var td=today();
+  var grid=document.getElementById('cal-grid');
+  var html='';
+  for(var i=0;i<offset;i++)html+='<div></div>';
+  for(var d=1;d<=daysInMonth;d++){
+    var ds=calYear+'-'+pad(calMonth+1)+'-'+pad(d);
+    var isPast=ds<td;
+    var booked=isBooked(ds);
+    var isStart=startDate===ds;
+    var isEnd=endDate===ds;
+    var inRange=startDate&&endDate&&ds>startDate&&ds<endDate;
+    var cls='cal-day';
+    if(isPast)cls+=' past';
+    else if(isStart||isEnd)cls+=' start';
+    else if(inRange)cls+=' range';
+    else if(booked)cls+=' booked';
+    else cls+=' avail';
+    var dot=booked?'<span class="dot"></span>':'';
+    var onclick=isPast||booked?'':'onclick="pickDate(\''+ds+'\')"';
+    html+='<div class="'+cls+'" '+onclick+'>'+d+dot+'</div>';
+  }
+  grid.innerHTML=html;
+}
+
+function calNav(dir){calMonth+=dir;if(calMonth>11){calMonth=0;calYear++;}if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
+
+function pickDate(ds){
+  if(ds<today())return;
+  var slotProduct=getSelectedBookingSlotProduct();
+  var sl=slotProduct?getProdSlot(slotProduct.name):{type:'full_day'};
+
+  if(sl.type==='hourly'){
+    startDate=ds;endDate=ds;
+    selectedSlot=null;
+    document.getElementById('date-err').textContent='';
+    document.getElementById('v2-slot-section').style.display='';
+    buildV2SlotGrid(ds);
+    document.getElementById('btn-step2').disabled=true;
+    updateRangeBar();
+    renderCalendar();
+    return;
+  }
+
+  if(!startDate||(startDate&&endDate)){startDate=ds;endDate=null;}
+  else{
+    if(ds<startDate){startDate=ds;endDate=null;}
+    else{
+      var ok=true;
+      var s=new Date(startDate+'T00:00:00');
+      var e=new Date(ds+'T00:00:00');
+      for(var d=new Date(s);d<=e;d.setDate(d.getDate()+1)){
+        var ds2=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+        if(isBooked(ds2)){ok=false;break;}
+      }
+      if(!ok){document.getElementById('date-err').textContent='Some dates in this range are already booked.';renderCalendar();return;}
+      endDate=ds;
+    }
+  }
+  document.getElementById('date-err').textContent='';
+  document.getElementById('btn-step2').disabled=!startDate||!endDate;
+  updateRangeBar();
+  renderCalendar();
+}
+
+function updateRangeBar(){
+  var bar=document.getElementById('range-bar');
+  var slotProduct=getSelectedBookingSlotProduct();
+  var sl=slotProduct?getProdSlot(slotProduct.name):{type:'full_day'};
+  if(startDate&&endDate){
+    var days=Math.round((new Date(endDate+'T00:00:00')-new Date(startDate+'T00:00:00'))/86400000)+1;
+    var price=selectedProducts.reduce(function(s,p){return s+(p.price_full_day||0);},0);
+    var total=days*price;
+    bar.style.display='flex';
+    if(sl.type==='hourly'&&days===1){
+      bar.innerHTML='<span style="font-size:18px">📅</span><span class="r"><strong>'+fmtDate(startDate)+'</strong> — pick a time slot below</span><span style="font-weight:900">R'+total.toLocaleString('en-ZA')+'</span>';
+    }else{
+      bar.innerHTML='<span style="font-size:18px">📅</span><span class="r"><strong>'+fmtDate(startDate)+'</strong> → <strong>'+fmtDate(endDate)+'</strong> · '+days+' day'+(days>1?'s':'')+'</span><span style="font-weight:900">R'+total.toLocaleString('en-ZA')+'</span>';
+    }
+  }else if(startDate){
+    bar.style.display='flex';
+    bar.innerHTML='<span style="font-size:18px">📅</span><span class="r">Start: <strong>'+fmtDate(startDate)+'</strong> — now pick an end date</span>';
+  }else{bar.style.display='none';}
+}
+
+// ── TIME SLOT GRID (hourly products) ─────────────────────────────────────────
+function buildV2SlotGrid(date){
+  var slotProduct=getSelectedBookingSlotProduct();
+  var sl=slotProduct?getProdSlot(slotProduct.name):{type:'hourly',hours:4,extraHours:0,extraRate:0};
+  var hours=sl.hours||4;
+  var starts=[];
+  var ch=9,cm=30;
+  while(ch<14||(ch===14&&cm<=30)){starts.push({h:ch,m:cm});cm+=30;if(cm>=60){ch++;cm-=60;}}
+  var grid=document.getElementById('v2-slot-grid');
+  grid.innerHTML=starts.map(function(s){
+    var ss=pad(s.h)+':'+pad(s.m);
+    var tot=s.h*60+s.m+hours*60;
+    var es=pad(Math.floor(tot/60))+':'+pad(tot%60);
+    return '<button type="button" class="v2-slot-btn" data-start="'+ss+'" data-end="'+es+'" onclick="selectV2Slot(this,\''+ss+'\',\''+es+'\')">'+ss+' – '+es+'</button>';
+  }).join('');
+  var extraSec=document.getElementById('v2-extra-section');
+  var extraSel=document.getElementById('v2-extra-sel');
+  var ehCfg=getExtraHoursConfig();
+  var maxE=ehCfg.maxE;
+  var combinedRate=ehCfg.combinedRate;
+  if(maxE>0){
+    extraSec.style.display='';
+    var opts='<option value="0">No extra hours</option>';
+    for(var i=1;i<=maxE;i++){
+      var label='+'+i+' hour'+(i>1?'s':'');
+      if(combinedRate>0)label+=' (R'+(i*combinedRate).toLocaleString('en-ZA')+')';
+      opts+='<option value="'+i+'">'+label+'</option>';
+    }
+    extraSel.innerHTML=opts;
+  }else{
+    extraSec.style.display='none';
+  }
+  document.getElementById('v2-slot-summary').style.display='none';
+  selectedSlot=null;
+}
+
+function selectV2Slot(btn,start,end){
+  document.querySelectorAll('.v2-slot-btn').forEach(function(b){b.classList.remove('v2-active');});
+  btn.classList.add('v2-active');
+  selectedSlot={start:start,end:end,extra:0};
+  updateV2SlotSummary();
+  document.getElementById('btn-step2').disabled=false;
+}
+
+function updateV2SlotSummary(){
+  if(!selectedSlot)return;
+  var extra=parseInt(document.getElementById('v2-extra-sel').value||0);
+  var combinedRate=getExtraHoursConfig().combinedRate;
+  var displayEnd=selectedSlot.end;
+  if(extra>0){
+    var p=selectedSlot.end.split(':').map(Number);
+    var tot=p[0]*60+p[1]+extra*60;
+    displayEnd=pad(Math.floor(tot/60))+':'+pad(tot%60);
+  }
+  selectedSlot.extra=extra;
+  var costNote=extra>0&&combinedRate>0?' (+R'+(extra*combinedRate).toLocaleString('en-ZA')+' extra hrs)':'';
+  var sumEl=document.getElementById('v2-slot-summary');
+  sumEl.textContent='🕐 '+selectedSlot.start+' – '+displayEnd+costNote;
+  sumEl.style.display='';
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// STEP 3: DISTANCE CALCULATION
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function haversineKm(lat1,lon1,lat2,lon2){
+  var R=6371;
+  var dLat=(lat2-lat1)*Math.PI/180;
+  var dLon=(lon2-lon1)*Math.PI/180;
+  var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+  var c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+  return R*c;
+}
+
+// ── ADDRESS AUTOCOMPLETE ──────────────────────────────────────────────────────
+function normSuburbText(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();}
+function restrictedSuburbMatch(address){
+  var normAddr=normSuburbText(address);
+  if(!normAddr)return null;
+  return (RESTRICTED_SUBURBS||[]).find(function(s){
+    var n=normSuburbText(s&&s.name);
+    return n&&(' '+normAddr+' ').indexOf(' '+n+' ')!==-1;
+  })||null;
+}
+function blockRestrictedAddressIfNeeded(address){
+  var blocked=restrictedSuburbMatch(address);
+  if(!blocked)return false;
+  document.getElementById('dist-result').style.display='none';
+  document.getElementById('dist-err').textContent='We cannot deliver to '+blocked.name+'. Please enter another delivery address.';
+  document.getElementById('btn-step3').disabled=true;
+  calculatedDistance=null;transportFee=0;
+  return true;
+}
+function onAddressInput(q){
+  if(_addrDebounce)clearTimeout(_addrDebounce);
+  var drop=document.getElementById('addr-drop');
+  var load=document.getElementById('addr-loading');
+  if(q.length<3){drop.classList.remove('open');load.style.display='none';return;}
+  _addrDebounce=setTimeout(async function(){
+    load.style.display='inline';
+    try{
+      var hasHouseNumber=/^\d/.test(q.trim());
+      var params='format=json&q='+encodeURIComponent(q)+'&countrycodes=za&addressdetails=1&limit=6';
+      if(hasHouseNumber)params+='&layer=address';
+      var res=await fetch('https://nominatim.openstreetmap.org/search?'+params,{headers:{'Accept-Language':'en'}});
+      var data=await res.json();
+      var suggestions=data.map(function(r){
+        var a=r.address;
+        if(a){
+          var parts=[
+            a.house_number?a.house_number+' '+(a.road||''):(a.road||a.pedestrian||''),
+            a.suburb||a.neighbourhood||'',
+            a.city||a.town||a.village||a.municipality||'',
+            a.postcode||''
+          ].map(function(s){return s.trim();}).filter(Boolean);
+          if(parts.length>=2)return parts.join(', ');
+        }
+        return r.display_name.split(', ').slice(0,5).join(', ');
+      });
+      drop.innerHTML=suggestions.map(function(s,i){
+        return'<div class="addr-item" onmousedown="selectAddress('+i+')"><span class="addr-pin">📍</span><span>'+s+'</span></div>';
+      }).join('');
+      drop._data=data;
+      drop.classList.add('open');
+    }catch(e){drop.classList.remove('open');}
+    load.style.display='none';
+  },400);
+}
+
+function onAddressFocus(){_addrFocused=true;var q=document.getElementById('a-address').value;if(q.length>=3){var drop=document.getElementById('addr-drop');if(drop.innerHTML)drop.classList.add('open');}}
+function onAddressBlur(){setTimeout(function(){_addrFocused=false;document.getElementById('addr-drop').classList.remove('open');},200);}
+
+function selectAddress(idx){
+  var drop=document.getElementById('addr-drop');
+  var data=drop._data;
+  if(!data||!data[idx])return;
+  var r=data[idx];
+  var a=r.address;
+  var label='';
+  if(a){
+    var parts=[
+      a.house_number?a.house_number+' '+(a.road||''):(a.road||a.pedestrian||''),
+      a.suburb||a.neighbourhood||'',
+      a.city||a.town||a.village||a.municipality||'',
+      a.postcode||''
+    ].map(function(s){return s.trim();}).filter(Boolean);
+    if(parts.length>=2)label=parts.join(', ');
+  }
+  if(!label)label=r.display_name.split(', ').slice(0,5).join(', ');
+  var input=document.getElementById('a-address');
+  var typed=input.value.trim();
+  var houseMatch=typed.match(/^(\d+[a-zA-Z]?)\s/);
+  if(houseMatch&&!/^\d/.test(label.trim()))label=houseMatch[1]+' '+label;
+  input.value=label;
+  customerAddress=label;
+  addressLat=parseFloat(r.lat);
+  addressLng=parseFloat(r.lon);
+  drop.classList.remove('open');
+  doCalcDistance();
+}
+
+function recalcDistance(){
+  var addr=document.getElementById('a-address').value.trim();
+  if(!addr){document.getElementById('dist-err').textContent='Please enter a delivery address';return;}
+  if(blockRestrictedAddressIfNeeded(addr))return;
+  if(!addressLat||!addressLng){
+    customerAddress=addr;
+    doGeocodeAndCalc(addr);
+  }else{
+    doCalcDistance();
+  }
+}
+
+async function doGeocodeAndCalc(addr){
+  document.getElementById('dist-err').textContent='';
+  var btn=document.getElementById('btn-calc-dist');btn.disabled=true;btn.textContent='Looking up…';
+  try{
+    var res=await fetch('https://nominatim.openstreetmap.org/search?format=json&q='+encodeURIComponent(addr+', South Africa')+'&limit=1',{headers:{'User-Agent':'BubbleBounce-Booking/1.0'}});
+    var data=await res.json();
+    if(!data.length){document.getElementById('dist-err').textContent='Address not found. Please select from suggestions.';btn.disabled=false;btn.textContent='📍 Calculate Delivery Distance';return;}
+    addressLat=parseFloat(data[0].lat);
+    addressLng=parseFloat(data[0].lon);
+    doCalcDistance();
+  }catch(e){document.getElementById('dist-err').textContent='Could not look up address: '+e.message;}
+  btn.disabled=false;btn.textContent='📍 Recalculate Distance';
+}
+
+function doCalcDistance(){
+  if(!addressLat||!addressLng)return;
+  if(blockRestrictedAddressIfNeeded(customerAddress||document.getElementById('a-address').value))return;
+  var dist=haversineKm(DEPOT_LAT,DEPOT_LNG,addressLat,addressLng);
+  calculatedDistance=Math.ceil(dist);
+  transportFee=0;
+  var matched=false;
+  for(var i=0;i<TRANSPORT_RATES.length;i++){
+    if(calculatedDistance<=TRANSPORT_RATES[i].maxKm){transportFee=TRANSPORT_RATES[i].fee;matched=true;break;}
+  }
+  var resultEl=document.getElementById('dist-result');
+  if(!matched){
+    resultEl.style.display='none';
+    document.getElementById('dist-err').textContent='⚠️ This address is '+calculatedDistance+' km away and is outside our delivery area. Please choose a different address to proceed.';
+    document.getElementById('btn-step3').disabled=true;
+    return;
+  }
+  resultEl.style.display='block';
+  resultEl.innerHTML='✅ Distance: <strong>'+calculatedDistance+' km</strong> from Kyalami depot · Transport fee: <strong>R'+transportFee+'</strong>';
+  document.getElementById('btn-step3').disabled=false;
+  document.getElementById('dist-err').textContent='';
+}
+
+function goStep3(){
+  if(!endDate){goStep2();return;}
+  showStep(3);
+  calculatedDistance=null;transportFee=0;addressLat=null;addressLng=null;customerAddress='';
+  document.getElementById('btn-step3').disabled=true;
+  document.getElementById('dist-result').style.display='none';
+  document.getElementById('dist-err').textContent='';
+  document.getElementById('addr-drop').classList.remove('open');
+  document.getElementById('addr-drop').innerHTML='';
+  document.getElementById('a-address').value='';
+  document.getElementById('map-fallback').classList.remove('open');
+  if(window._fbMap){window._fbMap.remove();window._fbMap=null;window._fbMarker=null;}
+  document.getElementById('map-coord-info').textContent='';
+  document.getElementById('a-manual').value='';
+  _fbLat=null;_fbLng=null;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// NAVIGATION
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function showStep(n){
+  document.getElementById('view-extras').style.display='none';
+  for(var i=1;i<=5;i++){
+    var v=document.getElementById('view-step'+i);if(v)v.style.display=(i===n)?'block':'none';
+    var st=document.getElementById('step-'+i);
+    if(st)st.className='step '+(i<n?'done':i===n?'active':'pending');
+    if(i<5){
+      var ln=document.querySelectorAll('.step-line')[i-1];
+      if(ln)ln.className='step-line'+(i<n?' done':'');
+    }
+  }
+  document.getElementById('view-success').style.display='none';
+}
+
+function goStep4(){
+  if(calculatedDistance===null||!customerAddress){goStep3();return;}
+  showStep(4);
+}
+function validPhone(ph){return /^0[0-9]{9}$/.test(ph.replace(/[\s\-]/g,''));}
+function validEmail(em){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em);}
+function goStep5(){
+  var fn=document.getElementById('c-fname').value.trim();
+  var ph=document.getElementById('c-phone').value.trim();
+  var em=document.getElementById('c-email').value.trim();
+  if(!fn){document.getElementById('detail-err').textContent='Please enter the customer\'s first name';return;}
+  if(!ph){document.getElementById('detail-err').textContent='Please enter the customer\'s phone number';return;}
+  if(!validPhone(ph)){document.getElementById('detail-err').textContent='Please enter a valid South African phone number (e.g. 082 000 0000)';return;}
+  if(!em){document.getElementById('detail-err').textContent='Please enter the customer\'s email address';return;}
+  if(!validEmail(em)){document.getElementById('detail-err').textContent='Please enter a valid email address';return;}
+  document.getElementById('detail-err').textContent='';
+  showStep(5);
+  renderConfirm();
+}
+
+function renderConfirm(){
+  var days=Math.round((new Date(endDate+'T00:00:00')-new Date(startDate+'T00:00:00'))/86400000)+1;
+  var firstHourly=selectedProducts.find(function(p){return getProdSlot(p.name).type==='hourly';});
+  var ehCfg=getExtraHoursConfig();
+  var extraHrs=selectedSlot?selectedSlot.extra||0:0;
+  var extraHrsCost=extraHrs>0?extraHrs*ehCfg.combinedRate:0;
+  var rentalTotal=selectedProducts.reduce(function(s,p){return s+(p.price_full_day||0)*days;},0);
+  var extrasTotal=selectedExtras.reduce(function(s,e){return s+e.price*(e.qty||1);},0);
+  var grandTotal=rentalTotal+transportFee+extrasTotal+operatorCost+extraHrsCost;
+  var dep=Math.round(grandTotal*(DEPOSIT_PCT/100));
+  var fn=document.getElementById('c-fname').value.trim();
+  var ln=document.getElementById('c-lname').value.trim();
+  var ph=document.getElementById('c-phone').value.trim();
+  var em=document.getElementById('c-email').value.trim();
+  var ev=document.getElementById('c-event').value;
+
+  var durationLabel=days+' day'+(days>1?'s':'');
+  if(firstHourly&&selectedSlot){
+    var sl0=getProdSlot(firstHourly.name);
+    var totalHrs=(sl0.hours||4)+extraHrs;
+    durationLabel=totalHrs+'h'+(extraHrs>0?' (base '+(sl0.hours||4)+'h + '+extraHrs+'h extra)':'');
+  }
+
+  var slotRow='';
+  if(selectedSlot){
+    var dispEnd=selectedSlot.end;
+    if(extraHrs>0){var ep=selectedSlot.end.split(':').map(Number);var et=ep[0]*60+ep[1]+extraHrs*60;dispEnd=pad(Math.floor(et/60))+':'+pad(et%60);}
+    slotRow='<div class="sum-row"><span>🕐 Time Slot</span><span>'+selectedSlot.start+' – '+dispEnd+'</span></div>';
+  }
+
+  var itemRows=selectedProducts.map(function(p){
+    var ops=getProdOps(p.name);
+    var opLabel=ops.operatorIncluded?' <span style="font-size:10px;font-weight:700;color:var(--purple2);background:var(--purple-soft);padding:1px 6px;border-radius:20px;margin-left:4px;">👤 Op incl.</span>':'';
+    var sl=getProdSlot(p.name);
+    var rate=sl.type==='hourly'?'R'+(p.price_full_day||0).toLocaleString('en-ZA')+' / '+(sl.hours||4)+'h':'R'+(p.price_full_day||0).toLocaleString('en-ZA')+' / day';
+    var itemTotal=(p.price_full_day||0)*days;
+    return'<div class="sum-row"><span>'+(p.emoji||'🎈')+' Item</span><span><strong>'+p.name+'</strong>'+opLabel+'</span></div>'+
+      '<div class="sum-row" style="font-size:11.5px;color:var(--text3);"><span style="padding-left:14px;">└ '+rate+'</span><span>R'+itemTotal.toLocaleString('en-ZA')+'</span></div>';
+  }).join('');
+
+  var extraHrsLine=extraHrsCost>0?'<div class="sum-row"><span>⏰ Extra '+extraHrs+'h</span><span>R'+extraHrsCost.toLocaleString('en-ZA')+'</span></div>':'';
+  var extrasLines='';
+  if(selectedExtras.length>0){
+    extrasLines='<div class="sum-row"><span>➕ Extras</span><span>'+
+      selectedExtras.map(function(e){var q=e.qty||1;return e.name+(q>1?' x'+q:'')+' (R'+(e.price*q).toLocaleString('en-ZA')+')';}).join(', ')+
+    '</span></div>';
+  }
+  var opLine=operatorCost>0?'<div class="sum-row"><span>👤 Extra Operator</span><span>R'+operatorCost.toLocaleString('en-ZA')+'</span></div>':'';
+
+  var html=
+    itemRows+
+    '<div class="sum-row"><span>📅 Date</span><span>'+fmtDate(startDate)+(startDate!==endDate?' → '+fmtDate(endDate):'')+'</span></div>'+
+    slotRow+
+    '<div class="sum-row"><span>⏱ Duration</span><span>'+durationLabel+'</span></div>'+
+    (selectedProducts.length>1?'<div class="sum-row"><span>📋 Rental Total</span><span>R'+rentalTotal.toLocaleString('en-ZA')+'</span></div>':'')+
+    extraHrsLine+extrasLines+opLine+
+    '<div class="sum-row"><span>🚚 Transport</span><span>R'+transportFee+' ('+calculatedDistance+' km)</span></div>'+
+    '<div class="sum-row bold"><span>💰 Total</span><span>R'+grandTotal.toLocaleString('en-ZA')+'</span></div>'+
+    '<div class="sum-row bold"><span>💳 '+DEPOSIT_PCT+'% Deposit</span><span>R'+dep.toLocaleString('en-ZA')+'</span></div>'+
+    '<div style="border-top:1px solid #FBCFE8;margin-top:8px;padding-top:8px;font-size:12px;color:var(--text2)">'+
+    '<div class="sum-row"><span>📍 Delivery</span><span>'+customerAddress+'</span></div>'+
+    '<div class="sum-row"><span>👤 Customer</span><span>'+fn+(ln?' '+ln:'')+'</span></div>'+
+    '<div class="sum-row"><span>📞 Phone</span><span>'+ph+'</span></div>'+
+    (em?'<div class="sum-row"><span>📧 Email</span><span>'+em+'</span></div>':'')+
+    '<div class="sum-row"><span>🎉 Event</span><span>'+ev+'</span></div>'+
+    '<div class="sum-row"><span>🏷️ Booked by</span><span>'+staffName+'</span></div>'+
+    '</div>';
+  document.getElementById('confirm-summary').innerHTML=html;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// SUBMIT
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+async function submitBooking(){
+  var btn=document.getElementById('btn-submit');
+  btn.disabled=true;btn.textContent='Saving…';
+
+  var bookingStatus=document.getElementById('s-status').value;
+  var blockedAddr=restrictedSuburbMatch(customerAddress||document.getElementById('a-address').value);
+  if(blockedAddr){document.getElementById('confirm-err').textContent='We cannot deliver to '+blockedAddr.name+'. Please go back and enter another delivery address.';btn.disabled=false;btn.textContent='✅ Save Booking';return;}
+
+  try{
+    // Fetch all active bookings for this date (client-side check handles multi-item JSON arrays)
+    var clashRows=(await tursoQuery(
+      "SELECT id,item FROM ig_bookings WHERE date=? AND status IN ('pending','confirmed')",
+      [startDate]
+    )).rows;
+    for(var pi=0;pi<selectedProducts.length;pi++){
+      var _prod=selectedProducts[pi];
+      var siblings=getSiblings(_prod.name);
+      var hasClash=clashRows.some(function(row){
+        return parseItemNames(row.item).some(function(n){return siblings.indexOf(n)!==-1;});
+      });
+      if(hasClash){
+        document.getElementById('confirm-err').textContent=_prod.name+' already has a booking on that date. Please choose another date.';
+        btn.disabled=false;btn.textContent='✅ Save Booking';return;
+      }
+    }
+  }catch(e){console.error(e);}
+
+  var fn=document.getElementById('c-fname').value.trim();
+  var ln=document.getElementById('c-lname').value.trim();
+  var ph=document.getElementById('c-phone').value.trim();
+  var em=document.getElementById('c-email').value.trim();
+  var ev=document.getElementById('c-event').value;
+  var bal=document.getElementById('c-balloons').value.trim();
+  var notes=document.getElementById('c-notes').value.trim();
+  if(!validPhone(ph)){document.getElementById('confirm-err').textContent='Please enter a valid phone number.';btn.disabled=false;btn.textContent='✅ Save Booking';return;}
+  if(!em||!validEmail(em)){document.getElementById('confirm-err').textContent='Please enter a valid email address.';btn.disabled=false;btn.textContent='✅ Save Booking';return;}
+  var fullName=(fn+(ln?' '+ln:'')).trim();
+  var days=Math.round((new Date(endDate+'T00:00:00')-new Date(startDate+'T00:00:00'))/86400000)+1;
+  var rentalTotal=selectedProducts.reduce(function(s,p){return s+(p.price_full_day||0)*days;},0);
+  var extrasTotal=selectedExtras.reduce(function(s,e){return s+e.price*(e.qty||1);},0);
+  var extraHrs2=selectedSlot?selectedSlot.extra||0:0;
+  var extraHrsCost2=extraHrs2>0?extraHrs2*getExtraHoursConfig().combinedRate:0;
+  var grandTotal=rentalTotal+transportFee+extrasTotal+operatorCost+extraHrsCost2;
+
+  var itemsStr=selectedProducts.length===1
+    ?selectedProducts[0].name
+    :JSON.stringify(selectedProducts.map(function(p){return p.name;}));
+
+  var noteParts=[];
+  if(ev)noteParts.push(ev);
+  if(bal)noteParts.push('Balloons: '+bal);
+  if(notes)noteParts.push(notes);
+  var _addrCoord=(addressLat&&addressLng&&!/Pinned location/i.test(customerAddress))?' ('+addressLat.toFixed(6)+','+addressLng.toFixed(6)+')':'';
+  noteParts.push('Addr: '+customerAddress+_addrCoord);
+  noteParts.push('Distance: '+calculatedDistance+'km · Transport: R'+transportFee);
+  if(selectedExtras.length>0){
+    var extrasNote=selectedExtras.map(function(e){var q=e.qty||1;return e.name+(q>1?' x'+q:'')+' (R'+(e.price*q)+')';}).join(', ');
+    noteParts.push('Extras: '+extrasNote);
+  }
+  if(operatorCost>0)noteParts.push('Extra operator: R'+operatorCost+' ('+kidsCount+' kids)');
+  if(extraHrsCost2>0)noteParts.push('Extra '+extraHrs2+'h: R'+extraHrsCost2.toLocaleString('en-ZA'));
+  if(ph)noteParts.push('Phone: '+ph);
+  if(em)noteParts.push('Email: '+em);
+  noteParts.push('Total: R'+grandTotal.toLocaleString('en-ZA'));
+  var notesStr=noteParts.join(' | ');
+  if(selectedExtras.length>0){
+    notesStr=notesStr+' |||EXTRAS|||'+JSON.stringify(selectedExtras);
+  }
+  if(selectedSlot){
+    var slKey=selectedSlot.start+'-'+selectedSlot.end;
+    notesStr=JSON.stringify({_slot:slKey,_extra:selectedSlot.extra||0})+'\n'+notesStr;
+  }
+
+  var saved=false;
+  try{
+    await tursoQuery(
+      'INSERT INTO ig_bookings (booked_by,item,date,edate,status,notes,source,customer_name,customer_phone,customer_email,amount) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+      [staffName,itemsStr,startDate,endDate,bookingStatus,notesStr,'staff',fullName,ph,em||null,grandTotal]
+    );
+    saved=true;
+  }catch(e){
+    console.warn('Full INSERT failed (likely missing columns), trying fallback:',e.message||e);
+    try{
+      await tursoQuery(
+        'INSERT INTO ig_bookings (booked_by,item,date,edate,status,notes) VALUES (?,?,?,?,?,?)',
+        [staffName,itemsStr,startDate,endDate,bookingStatus,notesStr]
+      );
+      saved=true;
+    }catch(e2){
+      console.error('Save failed completely:',e2);
+    }
+  }
+
+  if(!saved){
+    document.getElementById('confirm-err').textContent='Could not save the booking. Please try again or check your connection.';
+    btn.disabled=false;
+    btn.textContent='✅ Save Booking';
+    return;
+  }
+
+  // Telegram — new staff booking
+  (function(){
+    var _dep=Math.round(grandTotal*(DEPOSIT_PCT/100));
+    var _addr=customerAddress?' | 📍 '+customerAddress:'';
+    var _phone=ph?' | 📞 '+ph:'';
+    var _statusEmoji=bookingStatus==='confirmed'?'✅':'⏳';
+    sendTelegram(
+      '💦 <b>Innova Group</b>\n━━━━━━━━━━━━━━\n📋 <b>New Staff Booking</b>\n\n'
+      +'🎪 <b>'+selectedProducts.map(function(p){return p.name;}).join(' + ')+'</b>\n'
+      +'📅 '+startDate+(endDate&&endDate!==startDate?' → '+endDate:'')+'\n'
+      +'👤 '+fullName+_phone+'\n'
+      +'💰 Total: R'+grandTotal.toLocaleString('en-ZA')+' | Deposit: R'+_dep.toLocaleString('en-ZA')+_addr+'\n'
+      +_statusEmoji+' Status: '+bookingStatus+' | Booked by: '+staffName
+    );
+  })();
+
+  // Show success
+  for(var i=1;i<=5;i++)document.getElementById('view-step'+i).style.display='none';
+  document.getElementById('view-extras').style.display='none';
+  document.getElementById('step-bar').style.display='none';
+  document.getElementById('view-success').style.display='block';
+  var statusNote=document.getElementById('success-status-note');
+  if(statusNote)statusNote.textContent=bookingStatus==='confirmed'?'Status: Confirmed ✅':'Status: Pending ⏳';
+  btn.disabled=false;
+  btn.textContent='✅ Save Booking';
+}
+
+// ── MAP FALLBACK ──────────────────────────────────────────────────────────────
+var _fbMap=null,_fbMarker=null,_fbLat=null,_fbLng=null;
+
+function toggleMapFallback(){
+  var fb=document.getElementById('map-fallback');
+  var opening=!fb.classList.contains('open');
+  if(opening){
+    fb.classList.add('open');
+    setTimeout(initFallbackMap,100);
+  }else{
+    fb.classList.remove('open');
+    _fbLat=null;_fbLng=null;
+    if(_fbMarker){_fbMap.removeLayer(_fbMarker);_fbMarker=null;}
+    document.getElementById('map-coord-info').textContent='';
+  }
+}
+
+function formatReverseAddress(result){
+  var a=result&&result.address?result.address:{};
+  var street=a.house_number?(a.house_number+' '+(a.road||'')):(a.road||a.pedestrian||a.footway||'');
+  var parts=[
+    street,
+    a.suburb||a.neighbourhood||a.city_district||'',
+    a.city||a.town||a.village||a.municipality||'',
+    a.postcode||''
+  ].map(function(s){return String(s||'').trim();}).filter(Boolean);
+  if(parts.length>=2)return parts.join(', ');
+  return String((result&&result.display_name)||'').split(', ').slice(0,5).join(', ');
+}
+
+async function reverseGeocodePinnedLocation(lat,lng){
+  try{
+    var url='https://nominatim.openstreetmap.org/reverse?format=json&addressdetails=1&lat='+encodeURIComponent(lat)+'&lon='+encodeURIComponent(lng);
+    var res=await fetch(url,{headers:{'Accept-Language':'en','User-Agent':'BubbleBounce-Booking/1.0'}});
+    if(!res.ok)return '';
+    return formatReverseAddress(await res.json());
+  }catch(e){return '';}
+}
+
+function initFallbackMap(){
+  var el=document.getElementById('fallback-map');
+  if(!el||_fbMap)return;
+  _fbMap=L.map(el).setView([DEPOT_LAT,DEPOT_LNG],12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OSM'}).addTo(_fbMap);
+  _fbMap.on('click',async function(e){
+    if(_fbMarker)_fbMap.removeLayer(_fbMarker);
+    _fbMarker=L.marker(e.latlng).addTo(_fbMap);
+    _fbLat=e.latlng.lat;_fbLng=e.latlng.lng;
+    var info=document.getElementById('map-coord-info');
+    var manual=document.getElementById('a-manual');
+    if(info)info.textContent='Looking up closest address...';
+    var nearest=await reverseGeocodePinnedLocation(_fbLat,_fbLng);
+    customerAddress=nearest||('Pinned location ('+_fbLat.toFixed(5)+', '+_fbLng.toFixed(5)+')');
+    if(manual)manual.value=customerAddress;
+    addressLat=_fbLat;addressLng=_fbLng;
+    if(info)info.textContent=nearest?'Closest address set - distance will be calculated':'Location set - distance will be calculated';
+    doCalcDistance();
+  });
+  setTimeout(function(){_fbMap.invalidateSize();},200);
+}
+
+function onManualAddress(){
+  var addr=document.getElementById('a-manual').value.trim();
+  if(addr)customerAddress=addr;
+  if(_fbLat&&_fbLng){
+    addressLat=_fbLat;addressLng=_fbLng;
+    doCalcDistance();
+  }
+}
+
+loadAll();
+</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</body>
+</html>
