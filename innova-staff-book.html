@@ -133,7 +133,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--pink);box-shadow:0 0 
     <div class="topbar-sub" id="topbar-sub">Loading…</div>
   </div>
   <div class="topbar-right">
-    <a href="innova-index.html" style="color:rgba(255,255,255,.7);font-size:12px;font-weight:700;text-decoration:none;">← Dashboard</a>
+    <a href="index.html" style="color:rgba(255,255,255,.7);font-size:12px;font-weight:700;text-decoration:none;">← Dashboard</a>
   </div>
 </div>
 
@@ -332,7 +332,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--pink);box-shadow:0 0 
     <p>The booking has been saved successfully.</p>
     <p style="font-weight:700;margin-top:8px;" id="success-status-note"></p>
     <div style="margin-top:16px;">
-      <button class="btn btn-sec" onclick="window.location.href='innova-index.html'">← Back to Dashboard</button>
+      <button class="btn btn-sec" onclick="window.location.href='index.html'">← Back to Dashboard</button>
     </div>
   </div>
 </div>
@@ -342,7 +342,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--pink);box-shadow:0 0 
 // STAFF AUTH CHECK
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 var staffName=sessionStorage.getItem('ig-current-user')||'';
-if(!staffName){window.location.href='innova-index.html';}
+if(!staffName){window.location.href='index.html';}
 // Set topbar
 (function(){
   var sub=document.getElementById('topbar-sub');
