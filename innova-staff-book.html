@@ -115,6 +115,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--pink);box-shadow:0 0 
 .v2-slot-btn:hover{border-color:var(--purple2);background:var(--purple-soft);color:var(--purple2);}
 .v2-slot-btn.v2-active{border-color:var(--purple2);background:var(--purple2);color:#fff;}
 .map-container{width:100%;height:220px;border-radius:var(--r);border:1.5px solid var(--border);margin-bottom:10px;overflow:hidden}
+.staff-login{max-width:420px;margin:30px auto 0;padding:0 16px}
+.staff-login .card{padding:20px}
+.staff-login h2{font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;margin-bottom:6px;color:var(--text)}
+.staff-login p{font-size:13px;color:var(--text2);margin-bottom:16px}
 @media(max-width:480px){
   .row{grid-template-columns:1fr}
   .topbar{padding:12px 16px}
@@ -137,7 +141,29 @@ input:focus,select:focus,textarea:focus{border-color:var(--pink);box-shadow:0 0 
   </div>
 </div>
 
-<div class="layout">
+<div class="staff-login" id="staff-login">
+  <div class="card">
+    <h2>Staff Login</h2>
+    <p>Sign in to create a staff booking.</p>
+    <div class="fr">
+      <label>Name</label>
+      <select id="staff-login-user">
+        <option value="">Select staff member</option>
+        <option value="Sidney">Sidney</option>
+        <option value="Thomas">Thomas</option>
+        <option value="Carmen">Carmen</option>
+      </select>
+    </div>
+    <div class="fr">
+      <label>PIN</label>
+      <input id="staff-login-pin" type="password" inputmode="numeric" maxlength="6" placeholder="Enter PIN">
+    </div>
+    <div class="error-msg" id="staff-login-err"></div>
+    <button class="btn btn-pri btn-wide" onclick="staffLogin()">Login</button>
+  </div>
+</div>
+
+<div class="layout" id="staff-app" style="display:none;">
 
 <div class="steps" id="step-bar">
   <div class="step active" id="step-1"><div class="step-num">1</div><span class="step-label">Item</span></div><div class="step-line"></div>
@@ -342,12 +368,61 @@ input:focus,select:focus,textarea:focus{border-color:var(--pink);box-shadow:0 0 
 // STAFF AUTH CHECK
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 var staffName=sessionStorage.getItem('ig-current-user')||'';
-if(!staffName){window.location.href='index.html';}
-// Set topbar
-(function(){
+var STAFF_PINS={Carmen:'1234',Thomas:'1234',Sidney:'1234'};
+var _staffLoaded=false;
+
+function showStaffLogin(){
+  var login=document.getElementById('staff-login');
+  var app=document.getElementById('staff-app');
   var sub=document.getElementById('topbar-sub');
-  if(sub)sub.textContent='Logged in as '+staffName;
-})();
+  if(login)login.style.display='block';
+  if(app)app.style.display='none';
+  if(sub)sub.textContent='Staff login';
+}
+
+function showStaffApp(user){
+  staffName=user;
+  sessionStorage.setItem('ig-current-user', user);
+  var login=document.getElementById('staff-login');
+  var app=document.getElementById('staff-app');
+  var sub=document.getElementById('topbar-sub');
+  if(login)login.style.display='none';
+  if(app)app.style.display='block';
+  if(sub)sub.textContent='Logged in as '+user;
+  if(!_staffLoaded&&typeof loadAll==='function'){
+    _staffLoaded=true;
+    loadAll();
+  }
+}
+
+async function loadStaffPins(){
+  try{
+    var res=await tursoQuery('SELECT value FROM ig_settings WHERE key=?',['bb-pins']);
+    if(res.rows&&res.rows[0]&&res.rows[0].value){
+      var pins=JSON.parse(res.rows[0].value);
+      return Object.assign({},STAFF_PINS,pins);
+    }
+  }catch(e){}
+  return STAFF_PINS;
+}
+
+async function staffLogin(){
+  var user=document.getElementById('staff-login-user').value;
+  var pin=document.getElementById('staff-login-pin').value;
+  var err=document.getElementById('staff-login-err');
+  if(err)err.textContent='';
+  if(!user){
+    if(err)err.textContent='Please select your name.';
+    return;
+  }
+  var pins=await loadStaffPins();
+  if(pins[user]!==pin){
+    if(err)err.textContent='Invalid PIN.';
+    document.getElementById('staff-login-pin').value='';
+    return;
+  }
+  showStaffApp(user);
+}
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // TURSO CONFIG
@@ -1433,7 +1508,11 @@ function onManualAddress(){
   }
 }
 
-loadAll();
+if(staffName){
+  showStaffApp(staffName);
+}else{
+  showStaffLogin();
+}
 </script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </body>
